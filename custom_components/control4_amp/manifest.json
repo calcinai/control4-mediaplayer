@@ -1,8 +1,9 @@
 {
-    "domain": "control4-mediaplayer",
-    "name": "Control4 Media Player",
+    "domain": "control4_amp",
+    "name": "Control4 Amp",
     "documentation": "https://github.com",
     "requirements": [],
     "codeowners": [],
+    "iot_class": "local_polling",
     "version": "1.0.0"
 }

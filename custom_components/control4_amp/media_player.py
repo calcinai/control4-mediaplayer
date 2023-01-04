@@ -1,6 +1,12 @@
 """ Control4-mediaplayer """
+from __future__ import annotations
 
-from .control4Amp import control4AmpChannel
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers import ConfigType
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
+from homeassistant.helpers.typing import DiscoveryInfoType
+
+from .control4_amp import Control4AmpChannel, Control4Amp
 
 import logging
 import homeassistant.helpers.config_validation as cv
@@ -24,14 +30,13 @@ from homeassistant.const import (
     STATE_ON,
 )
 
+from . import DOMAIN as CONTROL4_DOMAIN
+
 _LOGGER = logging.getLogger(__name__)
 
 #Why is this needed? Does it initialize variables?
 CONF_ON_VOLUME = "on_volume"
-CONF_HOST = "host"
-CONF_PORT = "port"
 CONF_CHANNEL = "channel"
-DEFAULT_PORT = 8750
 DEFAULT_VOLUME = 5
 
 SUPPORT_CONTROL4 = (
@@ -46,32 +51,32 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
         vol.Required(CONF_NAME): cv.string,
         vol.Optional(CONF_ON_VOLUME, default=DEFAULT_VOLUME): cv.positive_int,
-        vol.Required(CONF_HOST): cv.string,
         vol.Required(CONF_CHANNEL): cv.positive_int,
-        vol.Optional(CONF_PORT, default=DEFAULT_PORT): cv.port
     }
 )
 
+async def async_setup_platform(
+        hass: HomeAssistant,
+        config: ConfigType,
+        add_entities: AddEntitiesCallback,
+        discovery_info: DiscoveryInfoType | None = None,
+) -> None:
+    """Set up the Control4Amp binary sensor platform."""
+    sensors = []
+    for name, c4_amp in hass.data[CONTROL4_DOMAIN].items():
 
+        sensors.append(Control4MediaPlayer(config.get(CONF_NAME), c4_amp))
+    add_entities(sensors)
 
-
-async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
-    entity_name = config.get(CONF_NAME)
-    on_volume = config.get(CONF_ON_VOLUME)
-    host = config.get(CONF_HOST)
-    port = config.get(CONF_PORT)
-    channel = config.get(CONF_CHANNEL)
-
-    async_add_entities([Control4MediaPlayer(entity_name, on_volume, host, port, channel)],)
 
 class Control4MediaPlayer(MediaPlayerEntity):
     #Research at https://developers.home-assistant.io/docs/core/entity/media-player/
-    #_attr_device_class = 
 
-    def __init__(self, name, on_volume, host, port, channel):
+    def __init__(self, name, channel:Control4AmpChannel):
         #self.hass = hass
         self._domain = __name__.split(".")[-2]
         self._name = name
+        self._ampChannel = channel
         self._source = 1
         self._source_list = ['1','2','3','4']
         self._on_volume = on_volume / 100
