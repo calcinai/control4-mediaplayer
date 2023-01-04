@@ -39,10 +39,10 @@ DEFAULT_PORT = 8750
 DEFAULT_VOLUME = 5
 
 SUPPORT_CONTROL4 = (
-  SUPPORT_VOLUME_SET \
-  | SUPPORT_VOLUME_STEP \
-  | SUPPORT_TURN_ON \
-  | SUPPORT_TURN_OFF \
+  SUPPORT_VOLUME_SET
+  | SUPPORT_VOLUME_STEP
+  | SUPPORT_TURN_ON
+  | SUPPORT_TURN_OFF
   | SUPPORT_SELECT_SOURCE
 )
 
@@ -86,7 +86,7 @@ class Control4MediaPlayer(MediaPlayerEntity):
 
     async def async_update(self):
         # Not sure if update(self) is required.
-        _LOGGER.warn("update...")
+        _LOGGER.warning("update...")
        
     @property
     def should_poll(self):
@@ -129,17 +129,17 @@ class Control4MediaPlayer(MediaPlayerEntity):
         self._source = source
         self._ampChannel.source = source
         self.schedule_update_ha_state()
-        _LOGGER.warn("Source set to " + str(self._ampChannel.source))
+        _LOGGER.warning("Source set to " + str(self._ampChannel.source))
 
     async def async_turn_on(self):
-        _LOGGER.warn("Turning on...")
+        _LOGGER.warning("Turning on...")
         self._ampChannel.volume = self._on_volume
         result = self._ampChannel.turn_on()
         self._state = STATE_ON
         self.schedule_update_ha_state()
 
     async def async_turn_off(self):
-        _LOGGER.warn("Turning off...")
+        _LOGGER.warning("Turning off...")
         self._ampChannel.volume = self._on_volume
         result = self._ampChannel.turn_off()
         self._state = STATE_OFF 
@@ -148,14 +148,14 @@ class Control4MediaPlayer(MediaPlayerEntity):
     async def async_volume_up(self):
         self._ampChannel.volume = self._ampChannel.volume + .01
         self.schedule_update_ha_state()
-        _LOGGER.warn("volume set to " + str(self._ampChannel.volume))
+        _LOGGER.warning("volume set to " + str(self._ampChannel.volume))
 
     async def async_volume_down(self):
         self._ampChannel.volume = self._ampChannel.volume - .01
         self.schedule_update_ha_state()
-        _LOGGER.warn("volume set to " + str(self._ampChannel.volume))
+        _LOGGER.warning("volume set to " + str(self._ampChannel.volume))
 
     async def async_set_volume_level(self, volume):
         self._ampChannel.volume  = volume 
         self.schedule_update_ha_state()
-        _LOGGER.warn("volume set to " + str(self._ampChannel.volume))
+        _LOGGER.warning("volume set to " + str(self._ampChannel.volume))

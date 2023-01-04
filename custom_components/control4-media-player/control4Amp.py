@@ -8,9 +8,10 @@ def send_udp_command(command, host, port):
 
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.settimeout(1)
-    sock.setblocking(0)
+    sock.setblocking(False)
     sock.sendto( bytes(COMMAND, "utf-8"), (host, port))
 
+    received = ""
     ready = select.select([sock], [], [], 1)
     if ready[0]:
         received = str(sock.recv(1024), "utf-8")
@@ -50,7 +51,7 @@ class control4AmpChannel(object):
     @source.setter
     def source(self,value):
         self._source = value
-        return send_udp_command("c4.amp.out 0" + str(self._channel) + " 0" + str(self._source), self._host, self._port)
+        send_udp_command("c4.amp.out 0" + str(self._channel) + " 0" + str(self._source), self._host, self._port)
     
     @source.deleter
     def source(self):
